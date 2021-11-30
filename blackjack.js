@@ -24,25 +24,55 @@ class Deck {
             }
         }
     }
+
+    shuffle() {
+        for (let i = 0; i < 100; i++) {
+            let randomIndex = Math.floor(Math.random() * this.cards.length);
+            let randomIndex2 = Math.floor(Math.random() * this.cards.length);
+
+            let temp = this.cards[randomIndex];
+            this.cards[randomIndex] = this.cards[randomIndex2];
+            this.cards[randomIndex2] = temp;
+        }
+    }
+
+    draw() {
+        let drawnCard = this.cards.pop();
+        return drawnCard;
+    }
 }
 
 let deck = new Deck();
 
-function shuffle() {
-    for (i = 0; i < 100; i++) {
-        let randomIndex = Math.floor(Math.random() * deck.cards.length);
-        let randomIndex2 = Math.floor(Math.random() * deck.cards.length);
+class Player {
+    constructor(name) {
+        this.hand = [];
+        this.name = name;
+        this.stick = false;
+        this.score = 0;
+    }
 
-        let temp = deck.cards[randomIndex];
-        deck.cards[randomIndex] = deck.cards[randomIndex2];
-        deck.cards[randomIndex2] = temp;
+    drawCard() {
+        let newCard = deck.draw();
+        this.hand.push(newCard);
+        this.score += newCard.value;
     }
 }
 
-function draw() {
-    let drawnCard = deck.cards.pop();
-    return drawnCard;
+class GameLogic {
+    constructor() {
+        this.deck = new Deck();
+        this.players = [new Player("player1"), new Player("player2")];
+        this.turn = 0;
+    }
+
+    turns
+    stick
+    win/lose
+
 }
+
+// Functions
 
 deck.cards.forEach(function (card) {
     console.log(card.toString());
