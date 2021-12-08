@@ -1,13 +1,15 @@
 class Card {
-    constructor(suit, number, value, image) {
+    constructor(suit, number, value, symbol) {
         this.suit = suit;
         this.number = number;
         this.value = value;
-        this.image = image;
+        this.symbol = symbol;
     }
     toString() {
         return this.number + " of " + this.suit;
     }
+
+    render() {}
 }
 
 class Deck {
@@ -16,10 +18,11 @@ class Deck {
         let suits = ["spade", "heart", "diamond", "club"];
         let numbers = ["A", "K", "Q", "J", "10", "9", "8", "7", "6", "5", "4", "3", "2"];
         let values = [11, 10, 10, 10, 10, 9, 8, 7, 6, 5, 4, 3, 2];
+        let symbol = ["♠", "♥", "♦", "♣"];
 
         for (let i = 0; i < suits.length; i++) {
             for (let j = 0; j < numbers.length; j++) {
-                let card = new Card(suits[i], numbers[j], values[j]);
+                let card = new Card(suits[i], numbers[j], values[j], symbol[i]);
                 this.cards.push(card);
             }
         }
@@ -88,12 +91,27 @@ class GameLogic {
     nextTurn() {
         this.turn += 1;
         document.getElementById("pturn").textContent = "Player 2 turn";
-        document.getElementById("p1").textContent = "Player 1: " + this.players[0].score;
+        document.getElementById("p1score").textContent = this.players[0].score;
+        document.getElementById("p1cards").textContent = "";
+
+        for (let i = 0; i < this.players[0].hand.length; i++) {
+            let cardSymbol = this.players[0].hand[i].symbol;
+            let cardNum = this.players[0].hand[i].number;
+
+            document.getElementById("p1cards").appendChild(this.players[0].hand.render());
+        }
+
+        // get the <div> which contains the cards
+        // clear all visible cards via removeAllChildren()
+        // loop through players[0].hand -> for each Card, look at the number and suit.
+        // Map the suit to a symbol.
+        // Make a div and appendChild.
 
         if (this.turn === this.players.length) {
             this.turn -= this.players.length;
             document.getElementById("pturn").textContent = "Player 1 turn";
-            document.getElementById("p2").textContent = "Player 2: " + this.players[1].score;
+            document.getElementById("p2score").textContent = this.players[1].score;
+            document.getElementById("p2cards").textContent = this.players[1].hand;
         }
 
         let isGameOver = true;
@@ -107,6 +125,10 @@ class GameLogic {
 
         if (isGameOver) {
             this.gameOver();
+        } else {
+            if (this.currentPlayer().stick) {
+                this.nextTurn();
+            }
         }
     }
 
@@ -149,15 +171,16 @@ class GameLogic {
         } else {
             winmessage.textContent = "Sorry, no winners this time. Try again!";
         }
-
-        //button gamelogic.resetGame();
+        console.log(document.getElementById("restartbtn").style.display);
+        document.getElementById("restartbtn").style.display = "";
     }
 
     resetGame() {
         gamelogic = new GameLogic();
-        document.getElementById("p1").textContent = "Player 1: ";
-        document.getElementById("p2").textContent = "Player 2: ";
+        document.getElementById("p1score").textContent = "";
+        document.getElementById("p2score").textContent = "";
         document.querySelector("h2").textContent = "";
+        document.getElementById("restartbtn").style.display = "none";
     }
 }
 
@@ -165,8 +188,16 @@ let gamelogic = new GameLogic();
 let player1 = gamelogic.players[0];
 let player2 = gamelogic.players[1];
 
-document.getElementById("stick").addEventListener("click", gamelogic.stick.bind(gamelogic));
-document.getElementById("hit").addEventListener("click", gamelogic.hit.bind(gamelogic));
+document.getElementById("stick").addEventListener("click", () => {
+    gamelogic.stick();
+});
+document.getElementById("hit").addEventListener("click", () => {
+    gamelogic.hit();
+});
+document.getElementById("restartbtn").addEventListener("click", () => {
+    gamelogic.resetGame();
+});
+document.getElementById("restartbtn").style.display = "none";
 
 /*
 deck.cards.forEach(function (card) {
