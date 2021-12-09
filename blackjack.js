@@ -11,7 +11,6 @@ class Card {
 
     render() {
         let renderP = document.createElement("p");
-        document.getElementById("renderDiv").appendChild(renderP);
 
         const symbol = {
             spade: "♠",
@@ -21,13 +20,17 @@ class Card {
             joker: "🃏",
         };
 
-        if (symbol === "diamond" || symbol === "heart") {
-            symbol.style.color = "red";
-        }
-
         const mySymbol = symbol[this.suit];
 
-        const cardStyled = mySymbol + this.number;
+        if (this.suit === "diamond" || this.suit === "heart") {
+            renderP.style.color = "red";
+        }
+
+        renderP.textContent = this.number + mySymbol;
+
+        renderP.setAttribute("class", "cardDesign");
+
+        return renderP;
     }
 }
 
@@ -122,7 +125,7 @@ class GameLogic {
         }
 
         // update the UI:
-        // reset everything, fe player set score, render hand,
+        // fe player set score, render hand,
 
         for (let i = 0; i < this.players.length; i++) {
             let playerDiv = document.createElement("div");
@@ -131,29 +134,32 @@ class GameLogic {
             nameTag.textContent = "Player " + this.players[i].name;
             let scoreP = document.createElement("p");
             scoreP.textContent = this.players[i].score;
-            let cardDiv = document.createElement("div");
+            let handDiv = document.createElement("div");
+            handDiv.setAttribute("class", "hand");
 
             table.appendChild(playerDiv);
             playerDiv.appendChild(nameTag);
             playerDiv.appendChild(scoreP);
-            playerDiv.appendChild(cardDiv);
+            playerDiv.appendChild(handDiv);
+
+            for (let j = 0; j < this.players[i].hand.length; j++) {
+                let renderCard = this.players[i].hand[j].render();
+                handDiv.appendChild(renderCard);
+            }
         }
 
         /*
-
         // get the <div> which contains the cards
         // clear all visible cards via removeAllChildren()
         // loop through players[0].hand -> for each Card, look at the number and suit.
         // Map the suit to a symbol.
-        // Make a div and appendChild.
-
-        
+        // Make a div and appendChild.      
         */
 
         let isGameOver = true;
 
-        for (let i = 0; i < this.players.length; i++) {
-            if (this.players[i].stick === false) {
+        for (let j = 0; j < this.players.length; j++) {
+            if (this.players[j].stick === false) {
                 isGameOver = false;
                 break;
             }
@@ -214,12 +220,11 @@ class GameLogic {
     resetGame() {
         gamelogic = new GameLogic();
         document.getElementById("restartbtn").style.display = "none";
+        document.getElementById("endmessage").style.display = "none";
     }
 }
 
 let gamelogic = new GameLogic();
-let player1 = gamelogic.players[0];
-let player2 = gamelogic.players[1];
 
 document.getElementById("stick").addEventListener("click", () => {
     gamelogic.stick();
@@ -236,6 +241,9 @@ document.getElementById("restartbtn").style.display = "none";
 deck.cards.forEach(function (card) {
     console.log(card.toString());
 });
+
+let player1 = gamelogic.players[0];
+let player2 = gamelogic.players[1];
 
 console.log(deck.cards.length); 
 */
