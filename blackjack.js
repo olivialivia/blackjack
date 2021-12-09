@@ -67,10 +67,11 @@ class Deck {
 }
 
 class Player {
-    constructor(name) {
+    constructor(name, computer) {
         this.hand = [];
         this.name = name;
         this.stick = false;
+        this.computer = computer;
         this.score = 0;
     }
 
@@ -80,13 +81,19 @@ class Player {
         this.score += newCard.value;
     }
 
+    shouldDraw() {
+        if (this.score >= 17) {
+            return false;
+        }
+        return true;
+    }
     // can I draw function
 }
 
 class GameLogic {
     constructor() {
         this.deck = new Deck();
-        this.players = [new Player("Bob"), new Player("Amanda"), new Player("Grinch")];
+        this.players = [new Player("Bob"), new Player("Amanda"), new Player("Grinch", true)];
         this.turn = -1;
         this.deck.shuffle();
         this.nextTurn();
@@ -131,7 +138,7 @@ class GameLogic {
             let playerDiv = document.createElement("div");
             playerDiv.setAttribute("class", "players");
             let nameTag = document.createElement("h4");
-            nameTag.textContent = "Player " + this.players[i].name;
+            nameTag.textContent = "Player " + this.players[i].name + (this.players[i].stick ? " ✖" : "");
             let scoreP = document.createElement("p");
             scoreP.textContent = this.players[i].score;
             let handDiv = document.createElement("div");
@@ -170,6 +177,14 @@ class GameLogic {
         } else {
             if (this.currentPlayer().stick) {
                 this.nextTurn();
+            } else if (this.currentPlayer().computer) {
+                setTimeout(() => {
+                    if (this.currentPlayer().shouldDraw()) {
+                        this.hit();
+                    } else {
+                        this.stick();
+                    }
+                }, 2000);
             }
         }
     }
@@ -227,9 +242,15 @@ class GameLogic {
 let gamelogic = new GameLogic();
 
 document.getElementById("stick").addEventListener("click", () => {
+    if (gamelogic.currentPlayer().computer) {
+        return;
+    }
     gamelogic.stick();
 });
 document.getElementById("hit").addEventListener("click", () => {
+    if (gamelogic.currentPlayer().computer) {
+        return;
+    }
     gamelogic.hit();
 });
 document.getElementById("restartbtn").addEventListener("click", () => {
