@@ -9,7 +9,26 @@ class Card {
         return this.number + " of " + this.suit;
     }
 
-    render() {}
+    render() {
+        let renderP = document.createElement("p");
+        document.getElementById("renderDiv").appendChild(renderP);
+
+        const symbol = {
+            spade: "♠",
+            diamond: "♦",
+            heart: "♥",
+            club: "♣",
+            joker: "🃏",
+        };
+
+        if (symbol === "diamond" || symbol === "heart") {
+            symbol.style.color = "red";
+        }
+
+        const mySymbol = symbol[this.suit];
+
+        const cardStyled = mySymbol + this.number;
+    }
 }
 
 class Deck {
@@ -18,11 +37,10 @@ class Deck {
         let suits = ["spade", "heart", "diamond", "club"];
         let numbers = ["A", "K", "Q", "J", "10", "9", "8", "7", "6", "5", "4", "3", "2"];
         let values = [11, 10, 10, 10, 10, 9, 8, 7, 6, 5, 4, 3, 2];
-        let symbol = ["♠", "♥", "♦", "♣"];
 
         for (let i = 0; i < suits.length; i++) {
             for (let j = 0; j < numbers.length; j++) {
-                let card = new Card(suits[i], numbers[j], values[j], symbol[i]);
+                let card = new Card(suits[i], numbers[j], values[j]);
                 this.cards.push(card);
             }
         }
@@ -65,9 +83,10 @@ class Player {
 class GameLogic {
     constructor() {
         this.deck = new Deck();
-        this.players = [new Player("player1"), new Player("player2")];
-        this.turn = 0;
+        this.players = [new Player("Bob"), new Player("Amanda"), new Player("Grinch")];
+        this.turn = -1;
         this.deck.shuffle();
+        this.nextTurn();
     }
 
     currentPlayer() {
@@ -90,16 +109,37 @@ class GameLogic {
 
     nextTurn() {
         this.turn += 1;
-        document.getElementById("pturn").textContent = "Player 2 turn";
-        document.getElementById("p1score").textContent = this.players[0].score;
-        document.getElementById("p1cards").textContent = "";
-
-        for (let i = 0; i < this.players[0].hand.length; i++) {
-            let cardSymbol = this.players[0].hand[i].symbol;
-            let cardNum = this.players[0].hand[i].number;
-
-            document.getElementById("p1cards").appendChild(this.players[0].hand.render());
+        if (this.turn === this.players.length) {
+            this.turn -= this.players.length;
         }
+        document.getElementById("pturn").textContent = "Player " + this.currentPlayer().name + " turn";
+
+        // reset everything
+
+        const table = document.getElementById("table");
+        while (table.hasChildNodes()) {
+            table.removeChild(table.firstChild);
+        }
+
+        // update the UI:
+        // reset everything, fe player set score, render hand,
+
+        for (let i = 0; i < this.players.length; i++) {
+            let playerDiv = document.createElement("div");
+            playerDiv.setAttribute("class", "players");
+            let nameTag = document.createElement("h4");
+            nameTag.textContent = "Player " + this.players[i].name;
+            let scoreP = document.createElement("p");
+            scoreP.textContent = this.players[i].score;
+            let cardDiv = document.createElement("div");
+
+            table.appendChild(playerDiv);
+            playerDiv.appendChild(nameTag);
+            playerDiv.appendChild(scoreP);
+            playerDiv.appendChild(cardDiv);
+        }
+
+        /*
 
         // get the <div> which contains the cards
         // clear all visible cards via removeAllChildren()
@@ -107,12 +147,8 @@ class GameLogic {
         // Map the suit to a symbol.
         // Make a div and appendChild.
 
-        if (this.turn === this.players.length) {
-            this.turn -= this.players.length;
-            document.getElementById("pturn").textContent = "Player 1 turn";
-            document.getElementById("p2score").textContent = this.players[1].score;
-            document.getElementById("p2cards").textContent = this.players[1].hand;
-        }
+        
+        */
 
         let isGameOver = true;
 
@@ -177,9 +213,6 @@ class GameLogic {
 
     resetGame() {
         gamelogic = new GameLogic();
-        document.getElementById("p1score").textContent = "";
-        document.getElementById("p2score").textContent = "";
-        document.querySelector("h2").textContent = "";
         document.getElementById("restartbtn").style.display = "none";
     }
 }

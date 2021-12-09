@@ -9,7 +9,7 @@ h1 {
     font-weight: 600;
 }
 
-.table {
+#table {
     display: flex;
     align-items: stretch;
     justify-content: space-evenly;
@@ -24,7 +24,7 @@ h1 {
     width: 45%;
 }
 
-CARDS {
+.cardDesign {
     border: solid 1px;
     border-radius: 5px;
     width: 30px;
