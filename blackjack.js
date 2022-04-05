@@ -114,7 +114,6 @@ class GameLogic {
         player.drawCard(this.deck);
         this.nextTurn();
         // current player to draw card, called when button pressed
-        // call nextturn
     }
 
     nextTurn() {
@@ -130,9 +129,9 @@ class GameLogic {
         while (table.hasChildNodes()) {
             table.removeChild(table.firstChild);
         }
+        
 
-        // update the UI:
-        // fe player set score, render hand,
+        // update the UI: player set score, render hand
 
         for (let i = 0; i < this.players.length; i++) {
             let playerDiv = document.createElement("div");
@@ -155,13 +154,6 @@ class GameLogic {
             }
         }
 
-        /*
-        // get the <div> which contains the cards
-        // clear all visible cards via removeAllChildren()
-        // loop through players[0].hand -> for each Card, look at the number and suit.
-        // Map the suit to a symbol.
-        // Make a div and appendChild.      
-        */
 
         let isGameOver = true;
 
@@ -191,12 +183,8 @@ class GameLogic {
 
     gameOver() {
         let winmessage = document.querySelector("h2");
-        let winners = [];
+        let winners = []; // to contain the winning player/s
         let winningScore = 0; // the highest score of the game
-        // for each player:
-        // - is their score > winningScore AND <= 21? NO: skip them. YES: set winningScore = players[i].score; Remove all winners and add players[i] as sole winner.
-        // - is their score == winningScore? YES: add players[i] to the winners array.
-        // After you have looked at all players, winningScore = the highest VALID score in the game and winner contains the winning players.
 
         for (let i = 0; i < this.players.length; i++) {
             if (this.players[i].score > winningScore && this.players[i].score <= 21) {
